@@ -589,6 +589,10 @@ u32 Settings::getFlagStr(const std::string &name, const FlagDesc *flagdesc,
 	return flags;
 }
 
+Json::Value Settings::getJson(const std::string &name) const {
+	return str_to_json(get(name));
+}
+
 
 bool Settings::getNoiseParams(const std::string &name, NoiseParams &np) const
 {
@@ -654,7 +658,6 @@ bool Settings::getNoiseParamsFromGroup(const std::string &name,
 	return true;
 }
 
-
 bool Settings::exists(const std::string &name) const
 {
 	if (existsLocal(name))
@@ -684,8 +687,6 @@ std::vector<std::string> Settings::getNames() const
 	}
 	return names;
 }
-
-
 
 /***************************************
  * Getters that don't throw exceptions *
@@ -808,6 +809,21 @@ bool Settings::getV3FNoEx(const std::string &name, v3f &val) const
 	}
 }
 
+bool Settings::getJsonNoEx(const std::string& jsonString, Json::Value& outputJson) const {
+	Json::CharReaderBuilder builder;
+	Json::CharReader* reader = builder.newCharReader();
+	std::string errors;
+
+	bool parsedSuccess = reader->parse(jsonString.c_str(),
+										jsonString.c_str() + jsonString.size(), 
+										&outputJson, 
+										&errors);
+	delete reader;
+	if (not parsedSuccess) {
+		return false;
+	}
+	return true;
+}
 
 bool Settings::getFlagStrNoEx(const std::string &name, u32 &val,
 	const FlagDesc *flagdesc) const
@@ -825,7 +841,6 @@ bool Settings::getFlagStrNoEx(const std::string &name, u32 &val,
 		return false;
 	}
 }
-
 
 /***********
  * Setters *
@@ -953,6 +968,13 @@ bool Settings::setFlagStr(const std::string &name, u32 flags,
 	return set(name, writeFlagString(flags, flagdesc, flagmask));
 }
 
+bool Settings::setJson(const std::string &name, const Json::Value& jsonData) {
+    Json::StreamWriterBuilder writerBuilder;
+    std::unique_ptr<Json::StreamWriter> writer(writerBuilder.newStreamWriter());
+    std::ostringstream outputStream;
+    writer->write(jsonData, &outputStream);
+    return set(name, outputStream.str());
+}
 
 bool Settings::setNoiseParams(const std::string &name, const NoiseParams &np)
 {
@@ -969,7 +991,6 @@ bool Settings::setNoiseParams(const std::string &name, const NoiseParams &np)
 
 	return setEntry(name, &group, true);
 }
-
 
 bool Settings::remove(const std::string &name)
 {
