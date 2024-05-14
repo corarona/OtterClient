@@ -593,7 +593,6 @@ Json::Value Settings::getJson(const std::string &name) const {
 	return str_to_json(get(name));
 }
 
-
 bool Settings::getNoiseParams(const std::string &name, NoiseParams &np) const
 {
 	if (getNoiseParamsFromGroup(name, np) || getNoiseParamsFromValue(name, np))
@@ -658,6 +657,7 @@ bool Settings::getNoiseParamsFromGroup(const std::string &name,
 	return true;
 }
 
+
 bool Settings::exists(const std::string &name) const
 {
 	if (existsLocal(name))
@@ -687,6 +687,8 @@ std::vector<std::string> Settings::getNames() const
 	}
 	return names;
 }
+
+
 
 /***************************************
  * Getters that don't throw exceptions *
@@ -819,7 +821,7 @@ bool Settings::getJsonNoEx(const std::string& jsonString, Json::Value& outputJso
 										&outputJson, 
 										&errors);
 	delete reader;
-	if (not parsedSuccess) {
+	if (!parsedSuccess) {
 		return false;
 	}
 	return true;
@@ -841,6 +843,7 @@ bool Settings::getFlagStrNoEx(const std::string &name, u32 &val,
 		return false;
 	}
 }
+
 
 /***********
  * Setters *
@@ -991,6 +994,7 @@ bool Settings::setNoiseParams(const std::string &name, const NoiseParams &np)
 
 	return setEntry(name, &group, true);
 }
+
 
 bool Settings::remove(const std::string &name)
 {
