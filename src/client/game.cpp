@@ -1268,6 +1268,8 @@ void Game::processKeyInput()
 		toggleNoClip();
 	} else if (wasKeyDown(KeyType::FREECAM)) {
 		toggleFreecam();
+	} else if (wasKeyDown(KeyType::KILLAURA)) {
+		toggleKillaura();
 #if USE_SOUND
 	} else if (wasKeyDown(KeyType::MUTE)) {
 		if (g_settings->getBool("enable_sound")) {
@@ -1580,6 +1582,22 @@ void Game::toggleFreecam()
 		m_game_ui->showTranslatedStatusText("Freecam enabled");
 	} else {
 		m_game_ui->showTranslatedStatusText("Freecam disabled");
+	}
+}
+
+void Game::toggleKillaura()
+{
+	bool killaura_players = ! g_settings->getBool("killaura.players");
+	g_settings->set("killaura.players", bool_to_cstr(killaura_players));
+
+	if (!killaura_players) {
+		g_settings->set("killaura.mobs", bool_to_cstr(false));
+	}
+
+	if (killaura_players) {
+		m_game_ui->showTranslatedStatusText("Killaura enabled");
+	} else {
+		m_game_ui->showTranslatedStatusText("Killaura disabled");
 	}
 }
 
